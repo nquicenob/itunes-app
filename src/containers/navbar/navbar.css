@@ -1,0 +1,17 @@
+
+.navbar {
+  border-bottom: solid #ebebeb 1px;
+}
+
+.h1 {
+  font-size: 20px;
+}
+
+.link {
+  color: #4A8CC2;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
