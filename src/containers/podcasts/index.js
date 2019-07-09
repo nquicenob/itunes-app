@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from 'react';
 import 'flexboxgrid';
+
+import React, { useEffect, useState, useMemo } from 'react';
+import { withRouter } from 'react-router-dom';
+import queryString from 'query-string';
 
 import * as fetchs from 'store/api';
 
@@ -53,21 +56,47 @@ function useAPI(params, { fetchName, saveInStore, entity, ...rest } = {}) {
   return { loading, error, state };
 }
 
-function Podcasts() {
-  const { loading, error, state } = useAPI([], {
+export const filterIds = (needle, id, byId) => {
+  if (needle === '') {
+    return true;
+  }
+  const ele = byId[id];
+  const title = ele.title.label;
+  const artist = ele['im:artist'].label;
+  return (
+    title.toLocaleLowerCase().includes(needle) ||
+    artist.toLocaleLowerCase().includes(needle)
+  );
+};
+
+const Podcasts = props => {
+  const [value, setState] = useState('');
+  const { podcasts } = props;
+  const podcastIds = useMemo(
+    () => podcasts.allIds.filter(id => filterIds(value, id, podcasts.byId)),
+    [value, podcasts.allIds, podcasts.byId]
+  );
+
+  return (
+    <>
+      <FilterInput
+        podcastCount={podcastIds.length}
+        value={value}
+        onChange={setState}
+      />
+      <PodcastList podcasts={podcasts.byId} podcastIds={podcastIds} />
+    </>
+  );
+};
+
+function PodcastsLoable() {
+  const { loading, state } = useAPI([], {
     fetchName: 'fetchPodcasts',
     saveInStore: true,
     entity: 'podcasts'
   });
 
-  return loading ? (
-    <h1>loading</h1>
-  ) : (
-    <>
-      <FilterInput />
-      <PodcastList podcasts={state.podcasts} />
-    </>
-  );
+  return loading ? <h1>loading</h1> : <Podcasts podcasts={state.podcasts} />;
 }
 
-export default Podcasts;
+export default PodcastsLoable;
