@@ -1,10 +1,13 @@
-import React, { useEffect, useState, useReducer } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'flexboxgrid';
+
 import * as fetchs from 'store/api';
-import PodcastCardSummary from 'containers/podcast-card-summary';
 
 import { Entities, reducer } from 'store';
 import invariant from 'invariant';
+
+import PodcastList from './podcasts-list';
+import FilterInput from './filter-input';
 
 const action = (entities, result, entity) => {
   return {
@@ -57,28 +60,13 @@ function Podcasts() {
     entity: 'podcasts'
   });
 
-  return (
-    <div className="row center-xs around-xs top-xs">
-      {loading ? (
-        <h1>loading</h1>
-      ) : (
-        state.podcasts.allIds.map((id, index) => {
-          const podcast = state.podcasts.byId[id];
-          return (
-            <div
-              className="col-xs-12 col-sm-6 col-md-4 col-lg-3"
-              key={`${id}-${index}`}
-            >
-              <PodcastCardSummary
-                title={podcast.title.label}
-                author={podcast['im:artist'].label}
-                imgPaths={podcast['im:image']}
-              />
-            </div>
-          );
-        })
-      )}
-    </div>
+  return loading ? (
+    <h1>loading</h1>
+  ) : (
+    <>
+      <FilterInput />
+      <PodcastList podcasts={state.podcasts} />
+    </>
   );
 }
 
