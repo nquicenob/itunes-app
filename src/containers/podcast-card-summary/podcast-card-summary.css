@@ -1,0 +1,31 @@
+.card {
+  width: 250px;
+  box-sizing: border-box;
+  padding: 90px 20px 10px;
+  margin: 150px auto 0;
+  box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.33);
+  -webkit-box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.33);
+  -moz-box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.33);
+  position: relative;
+}
+
+.card > img {
+  position: absolute;
+  border-radius: 50%;
+  left: 0;
+  right: 0;
+  top: -70px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 150px;
+}
+
+.title {
+  font-size: 17px;
+  line-height: 1.5;
+  color: #1a1d20;
+}
+
+.p {
+  color: #737d89;
+}
