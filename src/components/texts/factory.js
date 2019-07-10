@@ -5,16 +5,26 @@ import classnames from 'classnames';
 
 const factoryText = Component => {
   const Text = props => {
+    const {
+      upper,
+      lnhigth,
+      italic,
+      nmarginTop,
+      nmarginBottom,
+      left,
+      bold,
+      ...rest
+    } = props;
     const cssClass = classnames(Component, {
-      'upper-case': props.upper,
-      'lh-higth': props.lnhigth,
-      italic: props.italic,
-      'no-margin-top': props.nmarginTop,
-      'no-margin-bottom': props.nmarginBottom,
-      'text-align-left': props.left,
-      bold: props.bold
+      'upper-case': upper,
+      'lh-higth': lnhigth,
+      italic: italic,
+      'no-margin-top': nmarginTop,
+      'no-margin-bottom': nmarginBottom,
+      'text-align-left': left,
+      bold: bold
     });
-    return <Component className={cssClass} {...props} />;
+    return <Component className={cssClass} {...rest} />;
   };
 
   Text.propTypes = {

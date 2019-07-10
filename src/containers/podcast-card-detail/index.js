@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import { H2, P } from 'components/texts';
 import { Podcast } from 'components/cards';
 
+import { useAPIAllPodcasts } from 'store/hooks';
+
 function PodcastCardDetail(props) {
   return (
     <Podcast className="podcast-card-detail">
@@ -38,4 +40,19 @@ PodcastCardDetail.propTypes = {
   imgPath: PropTypes.string.isRequired
 };
 
-export default PodcastCardDetail;
+function PodcastCardDetailLoable({ podcastID }) {
+  const { loading, state } = useAPIAllPodcasts();
+  return loading ? (
+    <h1>loading</h1>
+  ) : (
+    <PodcastCardDetail
+      title={state.entities.podcasts.byId[podcastID].title.label}
+      description={state.entities.podcasts.byId[podcastID].summary.label}
+      author={state.entities.podcasts.byId[podcastID]['im:artist'].label}
+      imgPath={state.entities.podcasts.byId[podcastID]['im:image'][2].label}
+      id={podcastID}
+    />
+  );
+}
+
+export default PodcastCardDetailLoable;

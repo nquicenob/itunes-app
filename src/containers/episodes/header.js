@@ -6,7 +6,7 @@ import { H1 } from 'components/texts';
 function Header(props) {
   return (
     <Podcast className="episodes-header">
-      <H1 left>Episodes: 11</H1>
+      <H1 left>Episodes: {props.numberOfEpisodes}</H1>
     </Podcast>
   );
 }

@@ -45,7 +45,7 @@ const Podcasts = props => {
 };
 
 function PodcastsLoable() {
-  const { loading, state } = useAPIAllPodcasts([]);
+  const { loading, state } = useAPIAllPodcasts();
   return loading ? (
     <h1>loading</h1>
   ) : (

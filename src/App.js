@@ -4,7 +4,8 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import loadable from '@loadable/component';
 
 import './App.css';
-import Provider, { entitiesReducer, fetchReducer } from './store';
+import Provider, { entitiesReducer, makeFetchReducer } from './store';
+import { PODCASTS_UI, PODCAST_UI } from './store/actions';
 import Navbar from './containers/navbar';
 
 const PodcastsLodable = loadable(() => import('./containers/podcasts'));
@@ -25,10 +26,13 @@ const initialState = {
   }
 };
 
+const podcastsUIReducer = makeFetchReducer(PODCASTS_UI);
+const podcastUIReducer = makeFetchReducer(PODCAST_UI);
+
 const mainReducer = (state, action) => ({
   entities: entitiesReducer(state.entities, action),
-  podcastsUI: fetchReducer(state.podcastsUI, action),
-  podcastUI: fetchReducer(state.podcastUI, action)
+  [PODCASTS_UI]: podcastsUIReducer(state.podcastsUI, action),
+  [PODCAST_UI]: podcastUIReducer(state.podcastUI, action)
 });
 
 // TODO: ADD 404 and progress bar
