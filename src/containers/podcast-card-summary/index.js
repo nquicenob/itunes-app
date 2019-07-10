@@ -1,30 +1,31 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import { H2, P } from 'components/texts';
+import { Podcast } from 'components/cards';
 
 import './podcast-card-summary.css';
 
 function PodcastCardSummary(props) {
-  const { title, author, imgPaths } = props;
+  const { title, author, imgPath, id } = props;
   return (
-    <div className="card">
-      <img className="img" src={imgPaths[2].label} alt={title} />
-      <h2 className="title">{title}</h2>
-      <p className="p">{author}</p>
-    </div>
+    <Link className="no-styles" to={`/podcast/${id}`}>
+      <Podcast className="podcast-card-summary">
+        <img className="img" src={imgPath} alt={title} />
+        <H2 upper lnhigth>
+          {title}
+        </H2>
+        <P>Author: {author}</P>
+      </Podcast>
+    </Link>
   );
 }
 
 PodcastCardSummary.propTypes = {
   title: PropTypes.string.isRequired,
   author: PropTypes.string.isRequired,
-  imgPaths: PropTypes.arrayOf(
-    PropTypes.shape({
-      attributes: PropTypes.shape({
-        height: PropTypes.string.isRequired
-      }),
-      label: PropTypes.string.isRequired
-    })
-  ).isRequired
+  id: PropTypes.string.isRequired,
+  imgPath: PropTypes.string.isRequired
 };
 
 export default PodcastCardSummary;

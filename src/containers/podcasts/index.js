@@ -1,60 +1,15 @@
 import 'flexboxgrid';
 
-import React, { useEffect, useState, useMemo } from 'react';
-import { withRouter } from 'react-router-dom';
-import queryString from 'query-string';
+import React, { useState, useMemo } from 'react';
+// import { withRouter } from 'react-router-dom';
+// import queryString from 'query-string';
+// import { Entities, reducer } from 'store';
+// import invariant from 'invariant';
 
-import * as fetchs from 'store/api';
-
-import { Entities, reducer } from 'store';
-import invariant from 'invariant';
+import { useAPI } from 'store/hooks';
 
 import PodcastList from './podcasts-list';
 import FilterInput from './filter-input';
-
-const action = (entities, result, entity) => {
-  return {
-    type: 'ADD_ENTITIES',
-    payload: {
-      [entity]: {
-        byId: {
-          ...entities[entity]
-        },
-        allIds: result
-      }
-    }
-  };
-};
-
-function useAPI(params, { fetchName, saveInStore, entity, ...rest } = {}) {
-  invariant(typeof fetchName === 'string', 'options.fetchName is required');
-  invariant(
-    saveInStore && typeof entity === 'string',
-    'options.entity is required if options.saveInStore is true'
-  );
-
-  const { state, dispatch } = Entities.useContainer();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState();
-
-  async function fetchWrapper() {
-    try {
-      setLoading(true);
-      const { entities, result } = await fetchs[fetchName]([...params], rest);
-      dispatch(action(entities, result, entity));
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    fetchWrapper();
-  }, [...params]);
-
-  return { loading, error, state };
-}
 
 export const filterIds = (needle, id, byId) => {
   if (needle === '') {

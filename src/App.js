@@ -8,9 +8,9 @@ import { Entities } from './store';
 import './App.css';
 import Navbar from './containers/navbar';
 
-const HomePageLodable = loadable(() => import('./pages/home'));
-const PodcastDetailPageLodable = loadable(() =>
-  import('./pages/podcast-detail')
+const PodcastsLodable = loadable(() => import('./containers/podcasts'));
+const PodcastDetailLodable = loadable(() =>
+  import('./containers/podcast-detail')
 );
 const PodcastEpisodeDetailPageLodable = loadable(() =>
   import('./pages/podcast-episode-detail')
@@ -24,11 +24,11 @@ function App() {
         <Navbar />
         <Entities.Provider>
           <Switch>
-            <Route path="/" exact component={HomePageLodable} />
+            <Route path="/" exact component={PodcastsLodable} />
             <Route
               path="/podcast/:podcastID"
               exact
-              component={PodcastDetailPageLodable}
+              component={PodcastDetailLodable}
             />
             <Route
               path="/podcast/:podcastID/episode/:episodeID"

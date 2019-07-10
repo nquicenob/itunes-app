@@ -20,7 +20,8 @@ export function PodcastsList(props) {
             <PodcastCardSummaryMemo
               title={podcast.title.label}
               author={podcast['im:artist'].label}
-              imgPaths={podcast['im:image']}
+              imgPath={podcast['im:image'][2].label}
+              id={id}
             />
           </div>
         );
