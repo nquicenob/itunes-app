@@ -1,46 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import invariant from 'invariant';
 
-import { Entities } from './index';
+import { useStateValue } from './index';
 import * as fetchs from './api';
 
-const action = (entities, result, entity) => {
-  return {
-    type: 'ADD_ENTITIES',
-    payload: {
-      [entity]: {
-        byId: {
-          ...entities[entity]
-        },
-        allIds: result
-      }
-    }
-  };
-};
+import { addEntity, fetchInit, fetchSuccess, fetchFailure } from './actions';
 
-export function useAPI(
-  params,
-  { fetchName, saveInStore, entity, ...rest } = {}
-) {
-  invariant(typeof fetchName === 'string', 'options.fetchName is required');
-  invariant(
-    saveInStore && typeof entity === 'string',
-    'options.entity is required if options.saveInStore is true'
-  );
+export const makeUseAPI = (fetchAPI, entity) => params => {
+  invariant(typeof fetchAPI === 'function', 'options.fetchName is required');
+  invariant(typeof entity === 'string', 'options.entity is required');
 
-  const { state, dispatch } = Entities.useContainer();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState();
+  const [state, dispatch] = useStateValue();
 
   async function fetchWrapper() {
     try {
-      setLoading(true);
-      const { entities, result } = await fetchs[fetchName]([...params], rest);
-      dispatch(action(entities, result, entity));
+      dispatch(fetchInit());
+      const { entities, result } = await fetchAPI(...params);
+      dispatch(addEntity(entities, result, entity));
+      dispatch(fetchSuccess(new Date().toISOString()));
     } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
+      dispatch(fetchFailure());
     }
   }
 
@@ -48,5 +27,11 @@ export function useAPI(
     fetchWrapper();
   }, [...params]);
 
-  return { loading, error, state };
-}
+  return {
+    loading: state.podcastsUI.isLoading,
+    error: state.podcastsUI.isLoading,
+    state: state
+  };
+};
+
+export const useAPIAllPodcasts = makeUseAPI(fetchs.fetchPodcasts, 'podcasts');

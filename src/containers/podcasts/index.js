@@ -6,7 +6,7 @@ import React, { useState, useMemo } from 'react';
 // import { Entities, reducer } from 'store';
 // import invariant from 'invariant';
 
-import { useAPI } from 'store/hooks';
+import { useAPIAllPodcasts } from 'store/hooks';
 
 import PodcastList from './podcasts-list';
 import FilterInput from './filter-input';
@@ -45,13 +45,12 @@ const Podcasts = props => {
 };
 
 function PodcastsLoable() {
-  const { loading, state } = useAPI([], {
-    fetchName: 'fetchPodcasts',
-    saveInStore: true,
-    entity: 'podcasts'
-  });
-
-  return loading ? <h1>loading</h1> : <Podcasts podcasts={state.podcasts} />;
+  const { loading, state } = useAPIAllPodcasts([]);
+  return loading ? (
+    <h1>loading</h1>
+  ) : (
+    <Podcasts podcasts={state.entities.podcasts} />
+  );
 }
 
 export default PodcastsLoable;
