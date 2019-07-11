@@ -41,12 +41,29 @@ export const useAPIAllPodcasts = (...params) => {
   };
 };
 
-export const useAPIPodcastDetail = podcastID => {
+export const useAPIPodcastDetail = (podcastID, selector) => {
   const fetchWrapper = async (podcastID, dispatch) => {
     try {
       dispatch(podcastUIFetchInit());
-      const { entities, result } = await fetchs.fetchPodcatsByID(podcastID);
-      dispatch(addEntity(entities, result, 'episodes'));
+      const [{ entities, result }, origin] = await fetchs.fetchPodcatsByID(
+        podcastID
+      );
+      const episodes = await fetchs.fetchDoc2login(origin.results[0].feedUrl);
+      dispatch(
+        addEntity(
+          {
+            ...entities,
+            episodes: {
+              [result[0]]: {
+                ...entities.episodes[result[0]],
+                feedData: episodes
+              }
+            }
+          },
+          result,
+          'episodes'
+        )
+      );
       dispatch(podcastUIFetchSuccess());
     } catch (err) {
       console.error(err);
@@ -57,11 +74,12 @@ export const useAPIPodcastDetail = podcastID => {
   const [state, dispatch] = useStateValue();
   useEffect(() => {
     fetchWrapper(podcastID, dispatch);
+    return () => dispatch(podcastUIFetchInit());
   }, [podcastID]);
 
   return {
     loading: state.podcastUI.isLoading,
     error: state.podcastUI.isLoading,
-    state: state
+    state: selector(state)
   };
 };

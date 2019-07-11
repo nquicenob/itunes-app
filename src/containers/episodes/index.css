@@ -10,4 +10,22 @@
 
 .episodes-list-line {
   padding: 10px 10px;
+  border-bottom: 1px solid grey;
+}
+
+.episodes-list-line:nth-child(odd) {
+  background-color: #f5f5f5;
+}
+
+.episodes-list-line--header {
+  border-bottom: 1px solid grey;
+}
+
+.episodes-list-line .link {
+  color: #4a8cc2;
+  text-decoration: none;
+}
+
+.episodes-list-line .link:hover {
+  text-decoration: underline;
 }

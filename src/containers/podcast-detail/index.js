@@ -16,7 +16,7 @@ function PodcastDetail(props) {
       <div className="col-md-4 col-xs-12 center-xs">
         <PodcastCardDetail podcastID={params.podcastID} />
       </div>
-      <div className="col-md-offset-1 col-xs-offset-0 col-md-7 col-xs-12 center-xs">
+      <div className="col-md-8 col-xs-12 center-xs">
         <PodcastEpisodes podcastID={params.podcastID} />
       </div>
     </div>
