@@ -10,7 +10,7 @@ export const PODCASTS_UI = 'podcastsUI';
 
 export const PODCAST_UI = 'podcastUI';
 
-export const addEntity = (entities, result, entity) => {
+export const addEntity = (entities, result, entity, created) => {
   return {
     type: ADD_ENTITY,
     payload: {
@@ -18,6 +18,7 @@ export const addEntity = (entities, result, entity) => {
         byId: {
           ...entities[entity]
         },
+        created,
         allIds: result
       }
     }

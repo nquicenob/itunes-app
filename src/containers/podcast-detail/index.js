@@ -4,11 +4,11 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 
 import PodcastCardDetail from 'containers/podcast-card-detail';
-import PodcastEpisodes from 'containers/episodes';
 
 function PodcastDetail(props) {
   const {
-    match: { params }
+    match: { params },
+    children
   } = props;
 
   return (
@@ -16,9 +16,7 @@ function PodcastDetail(props) {
       <div className="col-md-4 col-xs-12 center-xs">
         <PodcastCardDetail podcastID={params.podcastID} />
       </div>
-      <div className="col-md-8 col-xs-12 center-xs">
-        <PodcastEpisodes podcastID={params.podcastID} />
-      </div>
+      <div className="col-md-8 col-xs-12 center-xs">{children}</div>
     </div>
   );
 }
