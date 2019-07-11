@@ -1,6 +1,8 @@
 import './index.css';
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+
 import { H2, P } from 'components/texts';
 import { Podcast } from 'components/cards';
 
@@ -10,15 +12,19 @@ function PodcastCardDetail(props) {
   return (
     <Podcast className="podcast-card-detail">
       <div className="podcast-card-detail-section">
-        <img src={props.imgPath} alt={props.title} />
+        <Link to={`/podcast/${props.id}`}>
+          <img src={props.imgPath} alt={props.title} />
+        </Link>
       </div>
       <div className="podcast-card-detail-section">
-        <H2 nmarginBottom left>
-          {props.title}
-        </H2>
-        <P italic nmarginTop left>
-          {props.author}
-        </P>
+        <Link className="link" to={`/podcast/${props.id}`}>
+          <H2 nmarginBottom left>
+            {props.title}
+          </H2>
+          <P italic nmarginTop left>
+            {props.author}
+          </P>
+        </Link>
       </div>
       <div>
         <P left bold>

@@ -5,7 +5,6 @@ import { Podcast, Section } from 'components/cards';
 import { H1, P } from 'components/texts';
 
 function EpisodeDetail(props) {
-  debugger;
   return (
     <Podcast className="wrapper--episode-detail">
       <H1 left>{props.title}</H1>

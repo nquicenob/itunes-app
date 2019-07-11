@@ -8,3 +8,12 @@
   padding: 10px 0;
   border-bottom: 1px #ededed solid;
 }
+
+.link {
+  color: #4a8cc2;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
