@@ -17,7 +17,7 @@ const PodcastDetailLodable = loadable(() =>
 const PodcastEpisodesLodable = loadable(() => import('./containers/episodes'));
 
 const PodcastEpisodeDetailPageLodable = loadable(() =>
-  import('./pages/podcast-episode-detail')
+  import('./containers/episode-detail')
 );
 
 const saveStateWithThrottle = throttle(saveState, 1000);
@@ -72,7 +72,12 @@ function App() {
                   <Route
                     path={`${match.url}/episode/:episodeID`}
                     exact
-                    component={PodcastEpisodeDetailPageLodable}
+                    component={props => (
+                      <PodcastEpisodeDetailPageLodable
+                        {...props}
+                        podcastID={match.params.podcastID}
+                      />
+                    )}
                   />
                 </PodcastDetailLodable>
               )}

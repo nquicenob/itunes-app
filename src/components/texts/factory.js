@@ -28,7 +28,7 @@ const factoryText = Component => {
   };
 
   Text.propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     upper: PropTypes.bool,
     lnhigth: PropTypes.bool,
     italic: PropTypes.bool,
