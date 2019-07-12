@@ -1,10 +1,7 @@
 import 'flexboxgrid';
 
 import React, { useState, useMemo } from 'react';
-// import { withRouter } from 'react-router-dom';
-// import queryString from 'query-string';
-// import { Entities, reducer } from 'store';
-// import invariant from 'invariant';
+import get from 'bubble-gum-get';
 
 import { useAPIAllPodcasts } from 'store/hooks';
 
@@ -45,12 +42,10 @@ const Podcasts = props => {
 };
 
 function PodcastsLoable() {
-  const { loading, state } = useAPIAllPodcasts();
-  return loading ? (
-    <h1>loading</h1>
-  ) : (
-    <Podcasts podcasts={state.entities.podcasts} />
+  const { loading, state } = useAPIAllPodcasts(state =>
+    get(state, ['entities', 'podcasts'])
   );
+  return loading ? <h1>loading</h1> : <Podcasts podcasts={state} />;
 }
 
 export default PodcastsLoable;

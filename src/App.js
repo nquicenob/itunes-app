@@ -1,88 +1,62 @@
 import 'flexboxgrid';
-import React from 'react';
+import React, { Suspense, useState } from 'react';
+
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import loadable from '@loadable/component';
+import { lazy } from '@loadable/component';
 
 import './App.css';
-import Provider, { entitiesReducer, makeFetchReducer } from './store';
-import { saveState, getState } from './store/local-storage';
-import { PODCASTS_UI, PODCAST_UI } from './store/actions';
+import Provider, { mainReducer, initialState } from './store';
 import Navbar from './containers/navbar';
-import throttle from 'lodash.throttle';
+import Fallback from './containers/navbar/fallback';
+import ScrollToTop from './containers/scroll-2-top';
+import PodcastDetailLodable from './containers/podcast-detail';
 
-const PodcastsLodable = loadable(() => import('./containers/podcasts'));
-const PodcastDetailLodable = loadable(() =>
-  import('./containers/podcast-detail')
-);
-const PodcastEpisodesLodable = loadable(() => import('./containers/episodes'));
-
-const PodcastEpisodeDetailPageLodable = loadable(() =>
+const PodcastsLodable = lazy(() => import('./containers/podcasts'));
+const PodcastEpisodesLodable = lazy(() => import('./containers/episodes'));
+const PodcastEpisodeDetailPageLodable = lazy(() =>
   import('./containers/episode-detail')
-);
-
-const saveStateWithThrottle = throttle(saveState, 1000);
-
-const initialState = {
-  entities: {},
-  podcastsUI: {
-    isLoading: true
-  },
-  podcastUI: {
-    isLoading: true
-  }
-};
-
-const podcastsUIReducer = makeFetchReducer(PODCASTS_UI);
-const podcastUIReducer = makeFetchReducer(PODCAST_UI);
-
-const mainReducer = (state, action) => (
-  saveStateWithThrottle(state),
-  {
-    entities: entitiesReducer(state.entities, action),
-    [PODCASTS_UI]: podcastsUIReducer(state.podcastsUI, action),
-    [PODCAST_UI]: podcastUIReducer(state.podcastUI, action)
-  }
 );
 
 // TODO: ADD 404 and progress bar
 function App() {
+  const [value, setLoading] = useState(false);
   return (
     <div className="container-fluid wrap">
       <Router>
-        <Navbar />
-        <Provider
-          initialState={{ ...initialState, ...getState() }}
-          reducer={mainReducer}
-        >
-          <Switch>
-            <Route path="/" exact component={PodcastsLodable} />
-            <Route
-              path="/podcast/:podcastID"
-              component={({ match }) => (
-                <PodcastDetailLodable>
-                  <Route
-                    path={`${match.url}/`}
-                    exact
-                    component={() => (
-                      <PodcastEpisodesLodable
-                        podcastID={match.params.podcastID}
-                      />
-                    )}
-                  />
-                  <Route
-                    path={`${match.url}/episode/:episodeID`}
-                    exact
-                    component={props => (
-                      <PodcastEpisodeDetailPageLodable
-                        {...props}
-                        podcastID={match.params.podcastID}
-                      />
-                    )}
-                  />
-                </PodcastDetailLodable>
-              )}
-            />
-          </Switch>
+        <ScrollToTop />
+        <Provider initialState={{ ...initialState }} reducer={mainReducer}>
+          <Navbar loading={value} />
+          <Suspense fallback={<Fallback setLoading={setLoading} />}>
+            <Switch>
+              <Route path="/" exact component={PodcastsLodable} />
+              <Route
+                path="/podcast/:podcastID"
+                component={({ match }) => (
+                  <PodcastDetailLodable>
+                    <Route
+                      path={`${match.url}/`}
+                      exact
+                      component={() => (
+                        <PodcastEpisodesLodable
+                          podcastID={match.params.podcastID}
+                        />
+                      )}
+                    />
+                    <Route
+                      path={`${match.url}/episode/:episodeID`}
+                      exact
+                      component={props => (
+                        <PodcastEpisodeDetailPageLodable
+                          {...props}
+                          podcastID={match.params.podcastID}
+                        />
+                      )}
+                    />
+                  </PodcastDetailLodable>
+                )}
+              />
+            </Switch>
+          </Suspense>
         </Provider>
       </Router>
     </div>

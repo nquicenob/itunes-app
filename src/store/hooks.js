@@ -15,89 +15,105 @@ import {
   podcastUIFetchFailure
 } from './actions';
 
-const NUM_HOURS = 24;
+import { CACHE_EXPECTED_LIFE_TIME_HOURS } from 'config';
 
 const moreThan1Day = date => {
   invariant(!!date, 'The previous date is mandatory');
   const timeSinceLastUpdate = Date.now() - new Date(date).getTime();
-  return timeSinceLastUpdate / 1000 / 60 / 60 > NUM_HOURS;
+  return timeSinceLastUpdate / 1000 > CACHE_EXPECTED_LIFE_TIME_HOURS;
 };
 
-export const useAPIAllPodcasts = (...params) => {
+export const useAPIAllPodcasts = selector => {
   const [state, dispatch] = useStateValue();
-
-  const fetchWrapper = async (hookParams, dispatch) => {
-    try {
-      dispatch(podcastsUIFetchInit());
-      const prevDate = get(state, ['entities', 'podcasts', 'created']);
-      if (!prevDate || moreThan1Day(prevDate)) {
-        const { entities, result } = await fetchs.fetchPodcasts(...hookParams);
-        dispatch(
-          addEntity(entities, result, 'podcasts', new Date().toISOString())
-        );
-      }
-      dispatch(podcastsUIFetchSuccess());
-    } catch (err) {
-      console.error(err);
-      dispatch(podcastsUIFetchFailure());
-    }
-  };
-
   useEffect(() => {
-    fetchWrapper(params, dispatch);
+    let didCancel = false;
+    (async dispatch => {
+      try {
+        dispatch(podcastsUIFetchInit());
+        const prevDate = get(state, ['entities', 'podcasts', 'created']);
+        if (!prevDate || moreThan1Day(prevDate)) {
+          const { entities, result } = await fetchs.fetchPodcasts();
+          if (!didCancel) {
+            dispatch(
+              addEntity(entities, result, 'podcasts', new Date().toISOString())
+            );
+          }
+        }
+        if (!didCancel) {
+          dispatch(podcastsUIFetchSuccess());
+        }
+      } catch (err) {
+        console.error(err);
+        if (!didCancel) {
+          dispatch(podcastsUIFetchFailure());
+        }
+      }
+    })(dispatch);
+    return () => {
+      didCancel = true;
+    };
   }, []);
 
   return {
     loading: state.podcastsUI.isLoading,
     error: state.podcastsUI.isLoading,
-    state: state
+    state: selector(state)
   };
 };
 
 export const useAPIPodcastDetail = (podcastID, selector) => {
   const [state, dispatch] = useStateValue();
-  const fetchWrapper = async (podcastID, dispatch) => {
-    try {
-      dispatch(podcastUIFetchInit());
-      const prevDate = get(state, [
-        'entities',
-        'episodes',
-        'byId',
-        podcastID,
-        'created'
-      ]);
-      if (!prevDate || moreThan1Day(prevDate)) {
-        const [{ entities, result }, origin] = await fetchs.fetchPodcatsByID(
-          podcastID
-        );
-        const episodes = await fetchs.fetchDoc2login(origin.results[0].feedUrl);
-        dispatch(
-          addEntity(
-            {
-              ...entities,
-              episodes: {
-                [result[0]]: {
-                  ...entities.episodes[result[0]],
-                  feedData: episodes,
-                  created: new Date().toISOString()
-                }
-              }
-            },
-            result,
-            'episodes'
-          )
-        );
-      }
-      dispatch(podcastUIFetchSuccess());
-    } catch (err) {
-      console.error(err);
-      dispatch(podcastUIFetchFailure());
-    }
-  };
-
   useEffect(() => {
-    fetchWrapper(podcastID, dispatch);
-    return () => dispatch(podcastUIFetchInit());
+    let didCancel = false;
+    dispatch(podcastUIFetchInit());
+    (async (podcastID, dispatch) => {
+      try {
+        const prevDate = get(state, [
+          'entities',
+          'episodes',
+          'byId',
+          podcastID,
+          'created'
+        ]);
+        if (!prevDate || moreThan1Day(prevDate)) {
+          console.log('jajajaj');
+          const [{ entities, result }, origin] = await fetchs.fetchPodcatsByID(
+            podcastID
+          );
+          const episodes = await fetchs.fetchRSS(origin.results[0].feedUrl);
+          if (!didCancel) {
+            dispatch(
+              addEntity(
+                {
+                  ...entities,
+                  episodes: {
+                    [result[0]]: {
+                      ...entities.episodes[result[0]],
+                      feedData: episodes,
+                      created: new Date().toISOString()
+                    }
+                  }
+                },
+                result,
+                'episodes'
+              )
+            );
+          }
+        }
+        if (!didCancel) {
+          dispatch(podcastUIFetchSuccess());
+        }
+      } catch (err) {
+        console.error(err);
+        if (!didCancel) {
+          dispatch(podcastUIFetchFailure());
+        }
+      }
+    })(podcastID, dispatch);
+    return () => {
+      didCancel = true;
+      dispatch(podcastUIFetchInit());
+    };
   }, [podcastID]);
 
   return {

@@ -5,8 +5,12 @@ import {
   ADD_ENTITY,
   FETCH_INIT,
   FETCH_SUCCESS,
-  FETCH_FAILURE
+  FETCH_FAILURE,
+  PODCASTS_UI,
+  PODCAST_UI
 } from './actions';
+
+import { getState, saveStateWithThrottle } from './local-storage';
 
 export const StateContext = createContext();
 
@@ -53,5 +57,28 @@ export const makeFetchReducer = UI =>
         return state;
     }
   };
+
+export const podcastsUIReducer = makeFetchReducer(PODCASTS_UI);
+export const podcastUIReducer = makeFetchReducer(PODCAST_UI);
+
+export const mainReducer = (state, action) => (
+  saveStateWithThrottle(state),
+  {
+    entities: entitiesReducer(state.entities, action),
+    [PODCASTS_UI]: podcastsUIReducer(state.podcastsUI, action),
+    [PODCAST_UI]: podcastUIReducer(state.podcastUI, action)
+  }
+);
+
+export const initialState = {
+  entities: {},
+  podcastsUI: {
+    isLoading: true
+  },
+  podcastUI: {
+    isLoading: true
+  },
+  ...getState()
+};
 
 export default StateProvider;

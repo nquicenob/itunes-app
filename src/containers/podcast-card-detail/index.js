@@ -2,6 +2,7 @@ import './index.css';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import get from 'bubble-gum-get';
 
 import { H2, P } from 'components/texts';
 import { Podcast } from 'components/cards';
@@ -47,15 +48,17 @@ PodcastCardDetail.propTypes = {
 };
 
 function PodcastCardDetailLoable({ podcastID }) {
-  const { loading, state } = useAPIAllPodcasts();
+  const { loading, state: podcast } = useAPIAllPodcasts(state =>
+    get(state, ['entities', 'podcasts', 'byId', podcastID], {})
+  );
   return loading ? (
     <h1>loading</h1>
   ) : (
     <PodcastCardDetail
-      title={state.entities.podcasts.byId[podcastID].title.label}
-      description={state.entities.podcasts.byId[podcastID].summary.label}
-      author={state.entities.podcasts.byId[podcastID]['im:artist'].label}
-      imgPath={state.entities.podcasts.byId[podcastID]['im:image'][2].label}
+      title={podcast.title.label}
+      description={podcast.summary.label}
+      author={podcast['im:artist'].label}
+      imgPath={podcast['im:image'][2].label}
       id={podcastID}
     />
   );

@@ -4,8 +4,18 @@
 }
 
 .episodes-list {
-  padding: 10px 20px;
   margin-bottom: 20px;
+  min-height: 350px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.episodes-list--md-height {
+  height: 500px;
+}
+
+.episodes-list--max-height {
+  height: 700px;
 }
 
 .episodes-list-line {
@@ -18,6 +28,7 @@
 }
 
 .episodes-list-line--header {
+  padding: 10px 10px;
   border-bottom: 1px solid grey;
 }
 
