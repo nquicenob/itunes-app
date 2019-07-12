@@ -52,6 +52,7 @@ export const useAPIAllPodcasts = selector => {
     return () => {
       didCancel = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
@@ -61,7 +62,7 @@ export const useAPIAllPodcasts = selector => {
   };
 };
 
-export const useAPIPodcastDetail = (podcastID, selector) => {
+export const useAPIPodcastDetail = (podcastID, selector, caller) => {
   const [state, dispatch] = useStateValue();
   useEffect(() => {
     let didCancel = false;
@@ -76,7 +77,6 @@ export const useAPIPodcastDetail = (podcastID, selector) => {
           'created'
         ]);
         if (!prevDate || moreThan1Day(prevDate)) {
-          console.log('jajajaj');
           const [{ entities, result }, origin] = await fetchs.fetchPodcatsByID(
             podcastID
           );
@@ -114,11 +114,12 @@ export const useAPIPodcastDetail = (podcastID, selector) => {
       didCancel = true;
       dispatch(podcastUIFetchInit());
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [podcastID]);
 
   return {
     loading: state.podcastUI.isLoading,
-    error: state.podcastUI.isLoading,
+    error: state.podcastUI.isError,
     state: selector(state)
   };
 };

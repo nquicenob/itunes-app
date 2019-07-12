@@ -4,16 +4,16 @@ import PropTypes from 'prop-types';
 import { Podcast, Section } from 'components/cards';
 import { H1, P } from 'components/texts';
 
-function EpisodeDetail(props) {
+function EpisodeDetail({ state: data }) {
   return (
     <Podcast className="wrapper--episode-detail">
-      <H1 left>{props.title}</H1>
+      <H1 left>{data.title}</H1>
       <Section borderBottom>
-        <P left dangerouslySetInnerHTML={{ __html: props.content }} />
+        <P left dangerouslySetInnerHTML={{ __html: data.content }} />
       </Section>
       <Section padding10>
         <audio controls>
-          <source src={props.enclosure.url} type={props.enclosure.type} />
+          <source src={data.enclosure.url} type={data.enclosure.type} />
         </audio>
       </Section>
     </Podcast>
@@ -21,8 +21,11 @@ function EpisodeDetail(props) {
 }
 
 EpisodeDetail.propTypes = {
-  title: PropTypes.string.isRequired,
-  content: PropTypes.string.isRequired
+  state: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+    enclosure: PropTypes.object
+  }).isRequired
 };
 
 export default EpisodeDetail;

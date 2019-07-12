@@ -72,5 +72,44 @@ export async function fetchRSS(place) {
   );
   const res = await response.text();
   const result = await parser.parseString(res);
+
+  let max = 6;
+  let counter = 0;
+  for (const item of result.items) {
+    counter++;
+    let audio = new Audio();
+    audio.preload = 'metadata';
+    audio.src = item.enclosure.url;
+    audio.type = item.enclosure.type;
+    const ok = await Promise.race([
+      new Promise(resolve => {
+        const listenerSave = () => {
+          const minutes = parseInt(audio.duration / 60, 10);
+          const seconds = parseInt(audio.duration % 60);
+          audio.removeEventListener('loadedmetadata', listenerSave);
+          audio.src = null;
+          item.minutes = minutes;
+          item.seconds = seconds;
+          resolve(true);
+        };
+        const listenerError = err => {
+          console.log(err);
+          if (audio) {
+            audio.removeEventListener('error', listenerError);
+            resolve(true);
+          }
+        };
+        audio.addEventListener('loadedmetadata', listenerSave);
+        audio.addEventListener('error', listenerError);
+      }),
+      new Promise(resolve => setTimeout(resolve, 300))
+    ]);
+    if (ok) {
+      audio = null;
+    }
+    if (counter >= max) {
+      break;
+    }
+  }
   return result;
 }

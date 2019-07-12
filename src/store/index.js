@@ -62,6 +62,7 @@ export const podcastsUIReducer = makeFetchReducer(PODCASTS_UI);
 export const podcastUIReducer = makeFetchReducer(PODCAST_UI);
 
 export const mainReducer = (state, action) => (
+  // eslint-disable-next-line no-sequences
   saveStateWithThrottle(state),
   {
     entities: entitiesReducer(state.entities, action),

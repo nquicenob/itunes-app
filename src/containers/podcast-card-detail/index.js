@@ -6,6 +6,7 @@ import get from 'bubble-gum-get';
 
 import { H2, P } from 'components/texts';
 import { Podcast } from 'components/cards';
+import withConditionalRender from 'components/with-render';
 
 import { useAPIAllPodcasts } from 'store/hooks';
 
@@ -43,25 +44,27 @@ PodcastCardDetail.propTypes = {
   title: PropTypes.string.isRequired,
   author: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
-  imgPath: PropTypes.string.isRequired
+  imgPath: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired
 };
 
+const PodcastCardDetailWithConditionalRender = withConditionalRender(
+  ({ state, id }) => (
+    <PodcastCardDetail
+      title={state.title.label}
+      description={state.summary.label}
+      author={state['im:artist'].label}
+      imgPath={state['im:image'][2].label}
+      id={id}
+    />
+  )
+);
+
 function PodcastCardDetailLoable({ podcastID }) {
-  const { loading, state: podcast } = useAPIAllPodcasts(state =>
+  const result = useAPIAllPodcasts(state =>
     get(state, ['entities', 'podcasts', 'byId', podcastID], {})
   );
-  return loading ? (
-    <h1>loading</h1>
-  ) : (
-    <PodcastCardDetail
-      title={podcast.title.label}
-      description={podcast.summary.label}
-      author={podcast['im:artist'].label}
-      imgPath={podcast['im:image'][2].label}
-      id={podcastID}
-    />
-  );
+  return <PodcastCardDetailWithConditionalRender {...result} id={podcastID} />;
 }
 
 export default PodcastCardDetailLoable;

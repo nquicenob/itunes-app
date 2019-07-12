@@ -34,7 +34,9 @@ function EpisodeEle(props) {
         </P>
       </div>
       <div className="col-xs-3">
-        <P>???</P>
+        <P>
+          {episode.minutes}:{episode.seconds}
+        </P>
       </div>
     </div>
   );

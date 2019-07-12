@@ -4,6 +4,7 @@ function Fallback({ setLoading }) {
   useEffect(() => {
     setLoading(true);
     return () => setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return null;

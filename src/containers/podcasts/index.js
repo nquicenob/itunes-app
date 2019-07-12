@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import get from 'bubble-gum-get';
 
 import { useAPIAllPodcasts } from 'store/hooks';
+import withConditionalRender from 'components/with-render';
 
 import PodcastList from './podcasts-list';
 import FilterInput from './filter-input';
@@ -23,7 +24,7 @@ export const filterIds = (needle, id, byId) => {
 
 const Podcasts = props => {
   const [value, setState] = useState('');
-  const { podcasts } = props;
+  const { state: podcasts } = props;
   const podcastIds = useMemo(
     () => podcasts.allIds.filter(id => filterIds(value, id, podcasts.byId)),
     [value, podcasts.allIds, podcasts.byId]
@@ -41,11 +42,13 @@ const Podcasts = props => {
   );
 };
 
+const PodcastsWithConditionalRender = withConditionalRender(Podcasts);
+
 function PodcastsLoable() {
-  const { loading, state } = useAPIAllPodcasts(state =>
+  const result = useAPIAllPodcasts(state =>
     get(state, ['entities', 'podcasts'])
   );
-  return loading ? <h1>loading</h1> : <Podcasts podcasts={state} />;
+  return <PodcastsWithConditionalRender {...result} />;
 }
 
 export default PodcastsLoable;
